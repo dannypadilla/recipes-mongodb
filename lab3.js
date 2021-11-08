@@ -1,5 +1,5 @@
 'use strict';
-// Danny Padilla 
+// Danny Padilla
 
 const MongoClient = require("mongodb").MongoClient;
 
@@ -79,7 +79,7 @@ let recipes = [
 let db_user = "";
 let db_pw = "";
 let db_server = "";
-let db_port = "4042";
+let db_port = "";
 let db_url = `mongodb://${db_user}:${db_pw}@${db_server}:${db_port}/${db_user}`;
 
 let db_collection = "recipes";
@@ -95,5 +95,29 @@ async function run() {
     await client.close();
 }
 
-run();
 
+/*
+a.) Recipes that use the ingredients: Beef and Potato.
+   - print out the id and name of Recipes found.
+*/
+
+
+
+
+/*
+b.) Recipes whose names include: steak.
+   - print out the id and name of Recipes found.
+*/
+
+
+
+
+/*
+c.) Recipes whose names include: steak.
+   - print out the id and name of Recipes found.
+   * Must use Text Search for this query.
+   ** (Can create the necessary text index outside the program)
+*/
+
+
+run();

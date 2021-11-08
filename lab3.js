@@ -1,6 +1,10 @@
 'use strict';
 // Danny Padilla
 
+const SAVE_RECIPES_TO_DB = true;  /* <==== enable/disable writing to DB  */
+
+console.log(`====> Write recipes to DB flag enabled?: ${SAVE_RECIPES_TO_DB}`);
+
 const MongoClient = require("mongodb").MongoClient;
 
 let recipes = [
@@ -132,7 +136,9 @@ async function run() {
     let client = await MongoClient.connect(db_url, { useUnifiedTopology: true} );
     let db = client.db(db_user);
     let collection = await db.collection(db_collection);  // recipe collection
-    // await collection.insertMany(recipes);  // add recipe objects created above to DB
+    if (SAVE_RECIPES_TO_DB) {
+	await collection.insertMany(recipes);  // add recipe objects created above to DB
+    }
 
     const projection = {_id: true, name: true};  // limit output to id and name
 
@@ -162,7 +168,12 @@ b.) Recipes whose names include: steak.
 */
     
 
+    let query2 = await collection.find({
+	$text: {$search: "steak"}
+    }).project(projection);
+
     console.log("\n\nb.) Text Search:\n");
+    await query2.forEach(doc => console.log(doc) );
     
 
     await client.close();

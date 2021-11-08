@@ -5,13 +5,25 @@ const MongoClient = require("mongodb").MongoClient;
 
 let recipes = [
     {
-	"name": "special beef",
+	"name": "special potato beef",
 	"yield": 2,
 	"ingredients": [
-	    {"salt": 1},
-	    {"oil": 2},
-	    {"beef": 1},
-	    {"potato": 2}
+	    {
+		"name": "salt",
+		"qty": 1
+	    },
+	    {
+		"name": "oil",
+		"qty": 2
+	    },
+	    {
+		"name": "beef",
+		"qty": 1
+	    },
+	    {
+		"name": "potato",
+		"qty": 2
+	    }
 	],
 	"directions": [
 	    "chop potato",
@@ -27,10 +39,22 @@ let recipes = [
 	"name": "veggie delight",
 	"yield": 1,
 	"ingredients": [
-	    {"salt": 1},
-	    {"oil": 1},
-	    {"potato": 2},
-	    {"carrot": 2}
+	    {
+		"name": "salt",
+		"qty": 1
+	    },
+	    {
+		"name": "oil",
+		"qty": 1
+	    },
+	    {
+		"name": "potato",
+		"qty": 2
+	    },
+	    {
+		"name": "carrot",
+		"qty": 2
+	    }
 	],
 	"directions": [
 	    "chop potato",
@@ -46,9 +70,18 @@ let recipes = [
 	"name": "bored bread",
 	"yield": 4,
 	"ingredients": [
-	    {"salt": 1},
-	    {"yeast": 2},
-	    {"water": 2}
+	    {
+		"name": "salt",
+		"qty": 1
+	    },
+	    {
+		"name": "yeast",
+		"qty": 2
+	    },
+	    {
+		"name": "water",
+		"qty": 2
+	    }
 	],
 	"directions": [
 	    "add yeast to pan",
@@ -63,9 +96,18 @@ let recipes = [
 	"name": "special steak",
 	"yield": 2,
 	"ingredients": [
-	    {"salt": 1},
-	    {"pepper": 1},
-	    {"steak": 2}
+	    {
+		"name": "salt",
+		"qty": 1
+	    },
+	    {
+		"name": "pepper",
+		"qty": 1
+	    },
+	    {
+		"name": "steak",
+		"qty": 2
+	    }
 	],
 	"directions": [
 	    "season steak with salt",
@@ -89,35 +131,41 @@ console.log(`connecting to: ${db_url}`);
 async function run() {
     let client = await MongoClient.connect(db_url, { useUnifiedTopology: true} );
     let db = client.db(db_user);
-    let collection = await db.collection(db_collection);
+    let collection = await db.collection(db_collection);  // recipe collection
+    // await collection.insertMany(recipes);  // add recipe objects created above to DB
+
+    const projection = {_id: true, name: true};  // limit output to id and name
+
     
-    await collection.insertMany(recipes);  // add recipe objects created above
-    await client.close();
-}
-
-
 /*
 a.) Recipes that use the ingredients: Beef and Potato.
    - print out the id and name of Recipes found.
 */
 
 
+    let query1 = await collection.find({
+	$and: [
+	    {"ingredients.name": "beef"},
+	    {"ingredients.name": "potato"}
+	]
+    }).project(projection);  // should only return special potato beef
 
+    console.log("\na.) Beef && Potato:\n");
+    await query1.forEach(doc => console.log(doc) );
 
+    
 /*
 b.) Recipes whose names include: steak.
-   - print out the id and name of Recipes found.
-*/
-
-
-
-
-/*
-c.) Recipes whose names include: steak.
    - print out the id and name of Recipes found.
    * Must use Text Search for this query.
    ** (Can create the necessary text index outside the program)
 */
+    
 
+    console.log("\n\nb.) Text Search:\n");
+    
+
+    await client.close();
+}
 
 run();
